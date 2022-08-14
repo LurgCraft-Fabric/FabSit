@@ -77,7 +77,8 @@ public abstract class GenericSitBasedCommand {
             sitPos = new Vec3d(block.getX() + 0.5d, block.getY(), block.getZ() + 0.5d);
         } else if (sitPos == null) {
             // use the current player position otherwise
-            sitPos = player.getPos();
+            Vec3d ppos = player.getPos();
+            sitPos = new Vec3d(ppos.getX(), ppos.getY() + 0.75d, ppos.getZ());
         }
 
         // confirm player can pose right now

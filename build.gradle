@@ -7,7 +7,7 @@ plugins {
 }
 
 archivesBaseName = "${project.mod_id}-${project.minecraft_version}"
-version = project.mod_version
+version = "${project.mod_version}-${project.modified_version}"
 group = project.mod_group
 
 compileJava.options.encoding = StandardCharsets.UTF_8
