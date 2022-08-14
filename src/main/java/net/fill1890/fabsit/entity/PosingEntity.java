@@ -70,15 +70,15 @@ public abstract class PosingEntity extends ServerPlayerEntity {
     /**
      * Create a new EntityPoser
      *
-     * @param player player to base poser on
+     * @param player      player to base poser on
      * @param gameProfile game profile of player (should have different UUID)
      */
     public PosingEntity(ServerPlayerEntity player, GameProfile gameProfile) {
-        super(player.server, player.getWorld(), gameProfile, null);
+        super(player.server, player.getWorld(), gameProfile);
 
         this.player = player;
 
-        if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
             FabSit.LOGGER.info("FabSit posing client side - attempting to fetch skin manually");
 
             Executors.newCachedThreadPool().submit(this::fetchSkinAndUpdate);
@@ -93,7 +93,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
         this.getDataTracker().set(getMAIN_ARM(), player.getDataTracker().get(getMAIN_ARM()));
 
         // set the poser position
-        if(ConfigManager.getConfig().centre_on_blocks) {
+        if (ConfigManager.getConfig().centre_on_blocks) {
             BlockPos pos = player.getBlockPos();
             this.setPosition(pos.getX() + 0.5d, pos.getY(), pos.getZ() + 0.5d);
         } else {
@@ -132,16 +132,16 @@ public abstract class PosingEntity extends ServerPlayerEntity {
 
         // get all players in the current world
         this.getWorld().getPlayers()
-                .forEach(p-> {
+                .forEach(p -> {
                     // check if they're being updated, in range of the poser, and can see the poser
                     boolean updating = this.updatingPlayers.contains(p);
                     boolean inRange = p.getPos().isInRange(this.getPos(), 250);
                     boolean visible = p.canSee(this);
-                    if(inRange && visible && !updating) {
+                    if (inRange && visible && !updating) {
                         // Is in range, but wasn't before now so add data
                         this.addingPlayers.add(p);
                         this.updatingPlayers.add(p);
-                    } else if(!inRange && updating) {
+                    } else if (!inRange && updating) {
                         // Not in range, but was before now so remove data
                         this.updatingPlayers.remove(p);
                         this.removingPlayers.add(p);
@@ -154,7 +154,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
             p.networkHandler.sendPacket(this.spawnPoserPacket);
             p.networkHandler.sendPacket(this.trackerPoserPacket);
 
-            if(p != player && ConfigManager.getConfig().strongly_remove_players) {
+            if (p != player && ConfigManager.getConfig().strongly_remove_players) {
                 p.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(player.getId()));
             }
 
@@ -164,7 +164,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
 
         this.removingPlayers.forEach(p -> {
             p.networkHandler.sendPacket(this.despawnPoserPacket);
-            if(p != player && ConfigManager.getConfig().strongly_remove_players){
+            if (p != player && ConfigManager.getConfig().strongly_remove_players) {
                 p.networkHandler.sendPacket(new PlayerSpawnS2CPacket(player));
                 p.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(player.getId(), player.getDataTracker(), true));
             }
@@ -172,7 +172,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
 
         List<net.minecraft.util.Pair<ServerPlayerEntity, Integer>> removed = new ArrayList<>();
         this.delayedRemoves.forEach(p -> {
-            if(p.getRight() >= 15) {
+            if (p.getRight() >= 15) {
                 // remove player from the tablist 15 ticks after being added
                 p.getLeft().networkHandler.sendPacket(this.removePoserPacket);
                 removed.add(p);
@@ -229,7 +229,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
 
         this.updatingPlayers.forEach(p -> {
             // ignore the player we're syncing with, so they can still modify inventory and stuff
-            if(p != player) {
+            if (p != player) {
                 // if player is hidden, send an empty player and equipped NPC
                 p.networkHandler.sendPacket(playerHidden ? emptyPlayerPacket : emptyNpcPacket);
                 p.networkHandler.sendPacket(playerHidden ? equippedNpcPacket : equippedPlayerPacket);
@@ -244,7 +244,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
     }
 
     protected void syncHeadYaw() {
-        if(player.headYaw != player.prevHeadYaw) {
+        if (player.headYaw != player.prevHeadYaw) {
             // yaw is usually from -180 to 180, with the break at north,
             // 0 at south, east at -90, and west at 90
             // so we take the head yaw, change the key (0) to the initial direction,
@@ -252,15 +252,15 @@ public abstract class PosingEntity extends ServerPlayerEntity {
 
             int yaw = Math.round(player.getHeadYaw());
 
-            if(initialDirection == Direction.NORTH) {
+            if (initialDirection == Direction.NORTH) {
                 // key at 180/-180
                 yaw = yaw > 0 ? yaw - 180 : yaw + 180;
-            } else if(initialDirection == Direction.EAST) {
+            } else if (initialDirection == Direction.EAST) {
                 // key at -90
                 // becomes 0, 90, 180, 270/-90
                 yaw += 90;
                 yaw = yaw > 180 ? yaw - 360 : yaw;
-            } else if(initialDirection == Direction.WEST) {
+            } else if (initialDirection == Direction.WEST) {
                 // key at 90
                 // becomes 0, 90/-270, -180, -90
                 yaw -= 90;
@@ -281,7 +281,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
      * @param id animation id from EntityAnimationS2CPacket
      */
     public void animate(int id) {
-        if(id == EntityAnimationS2CPacket.SWING_MAIN_HAND || id == EntityAnimationS2CPacket.SWING_OFF_HAND) {
+        if (id == EntityAnimationS2CPacket.SWING_MAIN_HAND || id == EntityAnimationS2CPacket.SWING_OFF_HAND) {
             EntityAnimationS2CPacket animatePacket = new EntityAnimationS2CPacket(this, id);
 
             this.updatingPlayers.forEach(p -> p.networkHandler.sendPacket(animatePacket));
@@ -295,11 +295,11 @@ public abstract class PosingEntity extends ServerPlayerEntity {
      * @return cardinal direction
      */
     public Direction getCardinal(float yaw) {
-        if(yaw >= -45 && yaw <= 45) {
+        if (yaw >= -45 && yaw <= 45) {
             return Direction.SOUTH;
-        } else if(yaw > 45 && yaw <= 135) {
+        } else if (yaw > 45 && yaw <= 135) {
             return Direction.WEST;
-        } else if(yaw >= -135 && yaw < -45) {
+        } else if (yaw >= -135 && yaw < -45) {
             return Direction.EAST;
         } else {
             return Direction.NORTH;
@@ -319,7 +319,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
             p.networkHandler.sendPacket(this.removePoserPacket);
             p.networkHandler.sendPacket(this.despawnPoserPacket);
 
-            if(p != player && ConfigManager.getConfig().strongly_remove_players) {
+            if (p != player && ConfigManager.getConfig().strongly_remove_players) {
                 p.networkHandler.sendPacket(new PlayerSpawnS2CPacket(player));
                 p.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(player.getId(), player.getDataTracker(), true));
             }
@@ -344,7 +344,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
             FabSit.LOGGER.error("Could not load skin for NPC for " + this.player.getName().getString() + ", got " + e);
         }
 
-        if(skinNbt == null) return;
+        if (skinNbt == null) {return;}
 
         // update textures
         String value = skinNbt.getString("value");

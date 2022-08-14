@@ -35,7 +35,7 @@ public interface PlayerEntityAccessor {
      * @return NBT location of shoulder entity
      */
     @Accessor("LEFT_SHOULDER_ENTITY")
-    static TrackedData<NbtCompound> getLEFT_SHOULDER_ENTITY() { throw new AssertionError(); }
+    static TrackedData<NbtCompound> getLEFT_SHOULDER_ENTITY() {throw new AssertionError();}
 
     /**
      * Get NBT location of the right shoulder entity, for syncing parrots with posers
@@ -43,5 +43,5 @@ public interface PlayerEntityAccessor {
      * @return NBT location of shoulder entity
      */
     @Accessor("RIGHT_SHOULDER_ENTITY")
-    static TrackedData<NbtCompound> getRIGHT_SHOULDER_ENTITY() { throw new AssertionError(); }
+    static TrackedData<NbtCompound> getRIGHT_SHOULDER_ENTITY() {throw new AssertionError();}
 }

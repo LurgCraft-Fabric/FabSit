@@ -69,13 +69,13 @@ public class PoseManagerEntity extends ArmorStandEntity {
         this.position = position;
 
         // if the pose is more complex than sitting, create a posing npc
-        if(pose == Pose.LAYING || pose == Pose.SPINNING) {
+        if (pose == Pose.LAYING || pose == Pose.SPINNING) {
             // copy player game profile with a random uuid
             GameProfile gameProfile = new GameProfile(UUID.randomUUID(), player.getEntityName());
             gameProfile.getProperties().putAll(player.getGameProfile().getProperties());
 
-            if(pose == Pose.LAYING) this.poser = new LayingEntity(player, gameProfile);
-            if(pose == Pose.SPINNING) this.poser = new SpinningEntity(player, gameProfile);
+            if (pose == Pose.LAYING) {this.poser = new LayingEntity(player, gameProfile);}
+            if (pose == Pose.SPINNING) {this.poser = new SpinningEntity(player, gameProfile);}
         }
 
         this.pose = pose;
@@ -95,7 +95,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
         super.addPassenger(passenger);
 
         // if the pose is npc-based, hide the player when initiated
-        if(this.pose == Pose.LAYING || this.pose == Pose.SPINNING) {
+        if (this.pose == Pose.LAYING || this.pose == Pose.SPINNING) {
             passenger.setInvisible(true);
 
             // update shoulder entities
@@ -107,8 +107,9 @@ public class PoseManagerEntity extends ArmorStandEntity {
             passenger.getDataTracker().set(getRIGHT_SHOULDER_ENTITY(), new NbtCompound());
         }
 
-        if(ConfigManager.getConfig().centre_on_blocks || position == ChairPosition.IN_BLOCK)
+        if (ConfigManager.getConfig().centre_on_blocks || position == ChairPosition.IN_BLOCK) {
             ConfigManager.occupiedBlocks.add(this.getBlockPos());
+        }
 
         used = true;
     }
@@ -117,11 +118,12 @@ public class PoseManagerEntity extends ArmorStandEntity {
     protected void removePassenger(Entity passenger) {
         super.removePassenger(passenger);
 
-        if(ConfigManager.getConfig().centre_on_blocks || position == ChairPosition.IN_BLOCK)
+        if (ConfigManager.getConfig().centre_on_blocks || position == ChairPosition.IN_BLOCK) {
             ConfigManager.occupiedBlocks.remove(this.getBlockPos());
+        }
 
         // if the pose was npc-based, show the player again when exited
-        if(this.pose == Pose.LAYING || this.pose == Pose.SPINNING) {
+        if (this.pose == Pose.LAYING || this.pose == Pose.SPINNING) {
             passenger.setInvisible(false);
 
             // replace shoulder entities
@@ -133,7 +135,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
     }
 
     public void animate(int id) {
-        if(this.pose == Pose.LAYING || this.pose == Pose.SPINNING) {
+        if (this.pose == Pose.LAYING || this.pose == Pose.SPINNING) {
             poser.animate(id);
         }
     }
@@ -148,7 +150,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
         this.killing = true;
 
         // if the pose was npc-based, remove the npc
-        if(poser != null) {
+        if (poser != null) {
             poser.destroy();
         }
 
@@ -157,20 +159,24 @@ public class PoseManagerEntity extends ArmorStandEntity {
 
     @Override
     public void tick() {
-        if(this.killing) return;
+        if (this.killing) {return;}
 
         // kill when the player stops posing
-        if(used && getPassengerList().size() < 1) { this.kill(); return; }
+        if (used && getPassengerList().size() < 1) {
+            this.kill();
+            return;
+        }
 
         // rotate the armour stand with the player so the player's legs line up
-        if(this.getFirstPassenger() instanceof ServerPlayerEntity player) {
+        if (this.getFirstPassenger() instanceof ServerPlayerEntity player) {
             this.setYaw(player.getHeadYaw());
 
             // send the action bar status if it hasn't been sent yet
             // needs to be delayed or it's overwritten
-            if(!this.statusSent) {
-                if(ConfigManager.getConfig().enable_messages.action_bar)
+            if (!this.statusSent) {
+                if (ConfigManager.getConfig().enable_messages.action_bar) {
                     player.sendMessage(Messages.getPoseStopMessage(player, this.pose), true);
+                }
 
                 this.statusSent = true;
             }
@@ -178,16 +184,19 @@ public class PoseManagerEntity extends ArmorStandEntity {
 
         // get the block the player's sitting on
         // if they're sitting on a slab or stair, get that, otherwise block below
-        BlockState sittingBlock = getEntityWorld().getBlockState(switch(this.position){
+        BlockState sittingBlock = getEntityWorld().getBlockState(switch (this.position) {
             case IN_BLOCK -> this.getBlockPos();
             case ON_BLOCK -> this.getBlockPos().down();
         });
 
         // force player to stand up if the block's been removed
-        if(sittingBlock.isAir()) { this.kill(); return; }
+        if (sittingBlock.isAir()) {
+            this.kill();
+            return;
+        }
 
         // if pose is npc-based, update players with npc info
-        if(this.pose == Pose.LAYING || this.pose == Pose.SPINNING) {
+        if (this.pose == Pose.LAYING || this.pose == Pose.SPINNING) {
             poser.sendUpdates();
         }
 

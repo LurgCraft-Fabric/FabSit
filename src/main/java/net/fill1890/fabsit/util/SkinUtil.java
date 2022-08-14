@@ -67,7 +67,7 @@ public abstract class SkinUtil {
         connection.setDoInput(true);
         connection.setRequestMethod("GET");
 
-        if(connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+        if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
             return null;
         }
 
@@ -77,10 +77,9 @@ public abstract class SkinUtil {
                 Scanner scanner = new Scanner(isr)
         ) {
             StringBuilder replyBuilder = new StringBuilder();
-            while(scanner.hasNextLine()) {
+            while (scanner.hasNextLine()) {
                 String line = scanner.next();
-                if(line.trim().isEmpty())
-                    continue;
+                if (line.trim().isEmpty()) {continue;}
                 replyBuilder.append(line);
             }
 

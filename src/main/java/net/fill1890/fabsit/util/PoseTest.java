@@ -12,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 public class PoseTest {
     /**
      * Check if a player can currently perform a given pose
-     *
+     * <p>
      * On a successful return, pose is valid
      * If pose is invalid, will send the relevant message to the player and throw an exception
      *
@@ -21,29 +21,29 @@ public class PoseTest {
      */
     public static void confirmPosable(ServerPlayerEntity player, BlockPos target) throws PoseException {
         // check if spectating
-        if(player.isSpectator())
-            throw new PoseException.SpectatorException();
+        if (player.isSpectator()) {throw new PoseException.SpectatorException();}
 
         // check if underwater
-        if(player.isInsideWaterOrBubbleColumn() && !ConfigManager.getConfig().allow_posing_underwater)
+        if (player.isInsideWaterOrBubbleColumn() && !ConfigManager.getConfig().allow_posing_underwater) {
             throw new PoseException.StateException();
+        }
 
         // check if flying, swimming, sleeping, or underwater
-        if(
+        if (
                 player.isFallFlying()
-                || player.isSwimming()
-                || player.isSleeping())
-            throw new PoseException.StateException();
+                        || player.isSwimming()
+                        || player.isSleeping()) {throw new PoseException.StateException();}
 
         BlockState below = player.getEntityWorld().getBlockState(new BlockPos(player.getPos()).down());
 
         // check if in midair
-        if(below.isAir() && !ConfigManager.getConfig().allow_posing_midair)
+        if (below.isAir() && !ConfigManager.getConfig().allow_posing_midair) {
             throw new PoseException.MidairException();
+        }
 
-        if(
+        if (
                 (ConfigManager.getConfig().centre_on_blocks || ConfigManager.getConfig().right_click_sit)
-                && ConfigManager.occupiedBlocks.contains(target)
+                        && ConfigManager.occupiedBlocks.contains(target)
         ) {
             throw new PoseException.BlockOccupied();
         }
@@ -57,6 +57,6 @@ public class PoseTest {
             case SITTING -> poses.sit;
         };
 
-        if(!allowed) throw new PoseException.PoseDisabled();
+        if (!allowed) {throw new PoseException.PoseDisabled();}
     }
 }

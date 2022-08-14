@@ -2,8 +2,8 @@ package net.fill1890.fabsit.event;
 
 import net.fill1890.fabsit.command.GenericSitBasedCommand;
 import net.fill1890.fabsit.config.ConfigManager;
-import net.fill1890.fabsit.entity.Pose;
 import net.fill1890.fabsit.entity.ChairPosition;
+import net.fill1890.fabsit.entity.Pose;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SlabBlock;
@@ -23,48 +23,37 @@ import net.minecraft.world.World;
 public class UseStairCallback {
     public static ActionResult interact(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
         // only allow interaction if enabled
-        if(!ConfigManager.getConfig().right_click_sit)
-            return ActionResult.PASS;
+        if (!ConfigManager.getConfig().right_click_sit) {return ActionResult.PASS;}
 
         // check player isn't spectating, sneaking, currently riding
-        if(player.isSpectator())
-            return ActionResult.PASS;
-        if(player.isSneaking())
-            return ActionResult.PASS;
-        if(player.hasVehicle())
-            return ActionResult.PASS;
+        if (player.isSpectator()) {return ActionResult.PASS;}
+        if (player.isSneaking()) {return ActionResult.PASS;}
+        if (player.hasVehicle()) {return ActionResult.PASS;}
 
         // player needs to click on an up-facing face
-        if(hitResult.getSide() != Direction.UP)
-            return ActionResult.PASS;
+        if (hitResult.getSide() != Direction.UP) {return ActionResult.PASS;}
 
         BlockPos pos = hitResult.getBlockPos();
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
 
         // check block is stair or slab
-        if(!(block instanceof SlabBlock || block instanceof StairsBlock))
-            return ActionResult.PASS;
+        if (!(block instanceof SlabBlock || block instanceof StairsBlock)) {return ActionResult.PASS;}
 
         // use the block occupation logic since this forces centering
-        if(ConfigManager.occupiedBlocks.contains(pos))
-            return ActionResult.PASS;
+        if (ConfigManager.occupiedBlocks.contains(pos)) {return ActionResult.PASS;}
 
         // player needs to click with an empty hand
-        if(!player.getStackInHand(Hand.MAIN_HAND).isEmpty())
-            return ActionResult.PASS;
+        if (!player.getStackInHand(Hand.MAIN_HAND).isEmpty()) {return ActionResult.PASS;}
 
         // bottom slab only
-        if(block instanceof SlabBlock && !isBottomSlab(state))
-            return ActionResult.PASS;
+        if (block instanceof SlabBlock && !isBottomSlab(state)) {return ActionResult.PASS;}
 
         // bottom stair only
-        if(block instanceof StairsBlock && !isBottomStair(state))
-            return ActionResult.PASS;
+        if (block instanceof StairsBlock && !isBottomStair(state)) {return ActionResult.PASS;}
 
         // check block above is empty
-        if(!world.getBlockState(pos.up()).isAir())
-            return ActionResult.PASS;
+        if (!world.getBlockState(pos.up()).isAir()) {return ActionResult.PASS;}
 
         // nice looking position
         Vec3d sitPos = new Vec3d(pos.getX() + 0.5, pos.getY() + 0.4d, pos.getZ() + 0.5d);

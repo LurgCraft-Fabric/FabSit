@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "id": "fabsit",
   "version": "1.5.3+1.19",
-
   "name": "FabSit",
   "description": "Sit in Fabric",
   "authors": [
@@ -11,16 +10,11 @@
   "contact": {
     "sources": "https://github.com/fill1890/fabsit"
   },
-
   "license": "MIT",
-
   "environment": "*",
   "entrypoints": {
     "main": [
       "net.fill1890.fabsit.FabSit"
-    ],
-    "client": [
-      "net.fill1890.fabsit.FabSitClient"
     ],
     "server": [
       "net.fill1890.fabsit.FabSitServer"

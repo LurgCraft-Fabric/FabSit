@@ -32,10 +32,10 @@ public abstract class RegistrySyncManagerMixin {
      * <br>
      * Injects just before sending the registry sync packet, checks if client has fabsit, and scrubs if not
      *
-     * @param player passed from mixin function
+     * @param player  passed from mixin function
      * @param handler passed from mixin function
-     * @param ci mixin callback info
-     * @param map local registry map in function
+     * @param ci      mixin callback info
+     * @param map     local registry map in function
      */
     @Inject(
             method = "sendPacket(Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/fabricmc/fabric/impl/registry/sync/packet/RegistryPacketHandler;)V",
@@ -46,7 +46,7 @@ public abstract class RegistrySyncManagerMixin {
             ServerPlayerEntity player, RegistryPacketHandler handler, CallbackInfo ci, Map<Identifier, Object2IntMap<Identifier>> map
     ) {
         // if client does not have fabsit
-        if(!ConfigManager.loadedPlayers.contains(player.networkHandler.connection.getAddress())) {
+        if (!ConfigManager.loadedPlayers.contains(player.networkHandler.connection.getAddress())) {
 
             // scrub entities from the syncing registry
             map.get(ENTITY_TYPE).removeInt(new Identifier(FabSit.MOD_ID, ChairEntity.ENTITY_ID));

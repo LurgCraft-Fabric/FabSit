@@ -2,9 +2,9 @@ package net.fill1890.fabsit.config;
 
 /**
  * Config structure
- *
+ * <p>
  * Written and read using GSON
- *
+ * <p>
  * Configuration for FabSit
  */
 public class Config {

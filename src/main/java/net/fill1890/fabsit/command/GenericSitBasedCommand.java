@@ -3,9 +3,9 @@ package net.fill1890.fabsit.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fill1890.fabsit.config.ConfigManager;
+import net.fill1890.fabsit.entity.ChairPosition;
 import net.fill1890.fabsit.entity.Pose;
 import net.fill1890.fabsit.entity.PoseManagerEntity;
-import net.fill1890.fabsit.entity.ChairPosition;
 import net.fill1890.fabsit.error.PoseException;
 import net.fill1890.fabsit.util.Messages;
 import net.fill1890.fabsit.util.PoseTest;
@@ -31,7 +31,7 @@ public abstract class GenericSitBasedCommand {
         ServerPlayerEntity player;
 
         try {
-            player = source.getPlayerOrThrow();
+            player = source.getPlayer();
         } catch (CommandSyntaxException e) {
             source.sendError(Text.of("You must be a player to run this command!"));
             return -1;
@@ -42,7 +42,7 @@ public abstract class GenericSitBasedCommand {
     }
 
     // run either from command or from packet request
-    public static int run(ServerPlayerEntity player, Pose pose) { return run(player, pose, null, ChairPosition.ON_BLOCK); }
+    public static int run(ServerPlayerEntity player, Pose pose) {return run(player, pose, null, ChairPosition.ON_BLOCK);}
 
     // run with a specific sit position and block-relative location
     // extra parameters for sitting on stairs and slabs
@@ -51,32 +51,31 @@ public abstract class GenericSitBasedCommand {
         // check the pose is config-enabled
         try {
             PoseTest.confirmEnabled(pose);
-        } catch(PoseException e) {
-            if(ConfigManager.getConfig().enable_messages.pose_errors)
-                Messages.sendByException(player, pose, e);
+        } catch (PoseException e) {
+            if (ConfigManager.getConfig().enable_messages.pose_errors) {Messages.sendByException(player, pose, e);}
             return -1;
         }
 
         // force a 500ms delay between running commands
         long currentTime = Calendar.getInstance().getTimeInMillis();
         Long lastUse = ConfigManager.lastUses.get(player);
-        if(lastUse != null) {
-            if(currentTime - lastUse < 500) return -1;
+        if (lastUse != null) {
+            if (currentTime - lastUse < 500) {return -1;}
         }
         ConfigManager.lastUses.put(player, currentTime);
 
         // toggle sitting if the player was sat down
-        if(player.hasVehicle()) {
+        if (player.hasVehicle()) {
             player.stopRiding();
             return 1;
         }
 
         Vec3d sitPos = pos;
-        if(sitPos == null && ConfigManager.getConfig().centre_on_blocks) {
+        if (sitPos == null && ConfigManager.getConfig().centre_on_blocks) {
             // centre on blocks if enabled in config
             BlockPos block = player.getBlockPos();
             sitPos = new Vec3d(block.getX() + 0.5d, block.getY(), block.getZ() + 0.5d);
-        } else if(sitPos == null) {
+        } else if (sitPos == null) {
             // use the current player position otherwise
             sitPos = player.getPos();
         }
@@ -86,8 +85,7 @@ public abstract class GenericSitBasedCommand {
             // TODO: make this nicer (no down(2))
             PoseTest.confirmPosable(player, new BlockPos(sitPos).down(2));
         } catch (PoseException e) {
-            if(ConfigManager.getConfig().enable_messages.pose_errors)
-                Messages.sendByException(player, pose, e);
+            if (ConfigManager.getConfig().enable_messages.pose_errors) {Messages.sendByException(player, pose, e);}
             return -1;
         }
 

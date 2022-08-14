@@ -29,5 +29,5 @@ public interface LivingEntityAccessor {
      * @return NBT location of living flags
      */
     @Accessor("LIVING_FLAGS")
-    static TrackedData<Byte> getLIVING_FLAGS() { throw new AssertionError(); }
+    static TrackedData<Byte> getLIVING_FLAGS() {throw new AssertionError();}
 }

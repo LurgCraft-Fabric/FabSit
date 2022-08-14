@@ -11,6 +11,7 @@ import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.dimension.DimensionType;
 
 import java.util.Optional;
 
@@ -41,7 +42,7 @@ public class LayingEntity extends PosingEntity {
         this.getDataTracker().set(getPOSE(), EntityPose.SLEEPING);
 
         // lowest possible block to put the bed on (minimal interference)
-        int worldBottom = this.getEntityWorld().getDimension().minY();
+        int worldBottom = DimensionType.MAX_HEIGHT;
         BlockPos bedPos = new BlockPos(this.getX(), worldBottom, this.getZ());
         // set the sleeping position of the poser to the bed
         this.getDataTracker().set(getSLEEPING_POSITION(), Optional.of(bedPos));
