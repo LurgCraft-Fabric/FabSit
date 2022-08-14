@@ -1,20 +1,23 @@
 import java.nio.charset.StandardCharsets
 
 plugins {
-	id 'java'
-	id 'fabric-loom' version '0.12.+'
+	id "java"
+	id "fabric-loom" version "0.12.+"
+	id "net.kyori.blossom" version "1.3.1"
 }
 
-compileJava.options.encoding = StandardCharsets.UTF_8
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
-
-archivesBaseName = project.archives_base_name
+archivesBaseName = "${project.mod_id}-${project.minecraft_version}"
 version = project.mod_version
-group = project.maven_group
+group = project.mod_group
+
+compileJava.options.encoding = StandardCharsets.UTF_8
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+}
 
 repositories {
-	maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+	maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 
 dependencies {
@@ -24,24 +27,30 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	// Permissions API
-	modImplementation include("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
+	modImplementation include("me.lucko:fabric-permissions-api:${project.luckperms_version}")
 }
-
 
 loom {
 	serverOnlyMinecraftJar()
-	mixin.defaultRefmapName.set("fabsit.refmap.json")
-}
-
-processResources {
-	inputs.property "version", project.version
-	filesMatching("fabric.mod.json") {
-		expand "version": project.version
-	}
+	mixin.defaultRefmapName.set("${project.mod_id}.refmap.json")
 }
 
 jar {
 	from("LICENSE") {
 		rename { "${it}_${project.archivesBaseName}"}
 	}
+}
+
+processResources {
+	filesMatching("fabric.mod.json") {
+		expand project.properties
+	}
+}
+
+blossom {
+	replaceToken("\${mod_version}", "${mod_version}")
+	replaceToken("\${mod_group}", "${mod_group}")
+	replaceToken("\${mod_id}", "${mod_id}")
+	replaceToken("\${mod_name}", "${mod_name}")
+	replaceToken("\${mod_description}", "${mod_description}")
 }

@@ -16,7 +16,8 @@ import org.slf4j.LoggerFactory;
 public class FabSit implements ModInitializer {
 
     // mod info
-    public static final String MOD_ID = "fabsit";
+    public static final String MOD_ID = "${mod_id}";
+    public static final String MOD_NAME = "${mod_name}";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     // Pose manager and chair entities
@@ -38,9 +39,9 @@ public class FabSit implements ModInitializer {
         try {
             ConfigManager.loadConfig();
         } catch (LoadConfigException ignored) {
-            LOGGER.warn("FabSit config not loaded! Using default settings");
+            LOGGER.warn(MOD_NAME + " config not loaded! Using default settings");
         }
 
-        LOGGER.info("FabSit loaded");
+        LOGGER.info(MOD_NAME + " loaded");
     }
 }

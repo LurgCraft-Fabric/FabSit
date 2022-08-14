@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "fabsit",
-  "version": "1.5.3+1.19",
-  "name": "FabSit",
-  "description": "Sit in Fabric",
+  "id": "${mod_id}",
+  "version": "${mod_version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
   "authors": [
     "fill1890"
   ],
@@ -23,11 +23,10 @@
   "mixins": [
     "fabsit.mixins.json"
   ],
-
   "depends": {
-    "fabricloader": ">=0.14.6",
+    "fabricloader": ">=${loader_version}",
     "fabric": "*",
-    "minecraft": "~1.19",
+    "minecraft": "~${minecraft_version}",
     "java": ">=17"
   }
 }
