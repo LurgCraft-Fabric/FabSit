@@ -37,7 +37,6 @@ import static net.fill1890.fabsit.mixin.accessor.PlayerEntityAccessor.getRIGHT_S
 public class PoseManagerEntity extends ArmorStandEntity {
     public static final String ENTITY_ID = "pose_manager";
     public static final EntityDimensions DIMENSIONS = new EntityDimensions(0.5F, 1.975F, true);
-    public static final String ENTITY_NAME = "FABSEAT";
 
     // has the seat been used - checked for removing later
     private boolean used = false;
@@ -62,7 +61,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
 
         this.setInvisible(true);
         this.setInvulnerable(true);
-        this.setCustomName(Text.of(ENTITY_NAME));
+        this.setCustomName(Text.of("FABSEAT"));
         this.setNoGravity(true);
         this.setYaw(player.getYaw()); // TODO: test this properly
 
@@ -86,7 +85,7 @@ public class PoseManagerEntity extends ArmorStandEntity {
 
         // if this is called directly it's probably because it's after a server start
         // we don't have position or pose info so we just silently fail
-        // this should never be called on the client because the entity is always packet-replaced
+        // this should never be called on the client because the entity is always replaced
         this.kill();
     }
 
@@ -106,9 +105,6 @@ public class PoseManagerEntity extends ArmorStandEntity {
             passenger.getDataTracker().set(getLEFT_SHOULDER_ENTITY(), new NbtCompound());
             passenger.getDataTracker().set(getRIGHT_SHOULDER_ENTITY(), new NbtCompound());
         }
-
-        if(ConfigManager.getConfig().centre_on_blocks || position == ChairPosition.IN_BLOCK)
-            ConfigManager.occupiedBlocks.add(this.getBlockPos());
 
         used = true;
     }
@@ -167,23 +163,19 @@ public class PoseManagerEntity extends ArmorStandEntity {
             this.setYaw(player.getHeadYaw());
 
             // send the action bar status if it hasn't been sent yet
-            // needs to be delayed or it's overwritten
             if(!this.statusSent) {
                 if(ConfigManager.getConfig().enable_messages.action_bar)
-                    player.sendMessage(Messages.getPoseStopMessage(player, this.pose), true);
+                    player.sendMessage((Text) Messages.getPoseStopMessage(player, this.pose), true);
 
                 this.statusSent = true;
             }
         }
 
-        // get the block the player's sitting on
-        // if they're sitting on a slab or stair, get that, otherwise block below
         BlockState sittingBlock = getEntityWorld().getBlockState(switch(this.position){
             case IN_BLOCK -> this.getBlockPos();
             case ON_BLOCK -> this.getBlockPos().down();
         });
 
-        // force player to stand up if the block's been removed
         if(sittingBlock.isAir()) { this.kill(); return; }
 
         // if pose is npc-based, update players with npc info

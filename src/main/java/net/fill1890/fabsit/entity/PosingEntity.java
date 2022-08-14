@@ -74,7 +74,7 @@ public abstract class PosingEntity extends ServerPlayerEntity {
      * @param gameProfile game profile of player (should have different UUID)
      */
     public PosingEntity(ServerPlayerEntity player, GameProfile gameProfile) {
-        super(player.server, player.getWorld(), gameProfile, null);
+        super(player.server, player.getWorld(), gameProfile);
 
         this.player = player;
 
@@ -328,16 +328,9 @@ public abstract class PosingEntity extends ServerPlayerEntity {
         this.desyncInventories();
     }
 
-    /**
-     * Force a skin update
-     * <br>
-     * Attempts to fetch skin from Mojang and apply to NPC
-     * Used in single player worlds as skins don't copy properly
-     */
     private void fetchSkinAndUpdate() {
         NbtCompound skinNbt = null;
 
-        // try to get from Mojang
         try {
             skinNbt = SkinUtil.fetchByUuid(this.player.getUuid());
         } catch (LoadSkinException e) {
@@ -346,9 +339,9 @@ public abstract class PosingEntity extends ServerPlayerEntity {
 
         if(skinNbt == null) return;
 
-        // update textures
         String value = skinNbt.getString("value");
         String signature = skinNbt.getString("signature");
+
         this.getGameProfile().getProperties().put("textures", new Property("textures", value, signature));
 
         FabSit.LOGGER.info("Updated skin for " + this.player.getName().getString());

@@ -8,7 +8,6 @@ import com.google.gson.JsonSyntaxException;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fill1890.fabsit.FabSit;
 import net.fill1890.fabsit.error.LoadConfigException;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +17,6 @@ import java.lang.reflect.Type;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -37,10 +35,6 @@ public abstract class ConfigManager {
     // players that have the mod loaded
     public static final ArrayList<SocketAddress> loadedPlayers = new ArrayList<>();
 
-    // record of the last time each player used a pose command
-    // to prevent spamming
-    public static final HashMap<ServerPlayerEntity, Long> lastUses= new HashMap<>();
-
     public static Config getConfig() {
         return CONFIG;
     }
@@ -53,7 +47,7 @@ public abstract class ConfigManager {
         BufferedWriter writer;
 
         // try to load the config file
-        File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), FabSit.MOD_ID + ".json");
+        File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "fabsit.json");
 
         if(configFile.exists()) {
             // exists: read into config object
@@ -104,7 +98,7 @@ public abstract class ConfigManager {
         String json;
 
         // try to load the config file
-        localeFile = ConfigManager.class.getClassLoader().getResourceAsStream("assets/" + FabSit.MOD_ID + "/lang/" + locale + ".json");
+        localeFile = ConfigManager.class.getClassLoader().getResourceAsStream("assets/fabsit/lang/" + locale + ".json");
 
         if(localeFile == null && !locale.equals("en_us")) {
             // not found - default to en_us
